@@ -11,22 +11,32 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG = "MainActivity";
 
+    private long task_time = 4*1000; //4s
+
+    private Intent weatherServiceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(LOG, "OnCreate");
-        startWeatherService();
+
+        //Creates weatherService and starts it
+        weatherServiceIntent = new Intent(this, WeatherService.class);
+        startWeatherService(task_time);
     }
 
-    @Override
-    protected void onStop(){
-        super.onStop();
+    private void startWeatherService(long taskTime) {
+        weatherServiceIntent.putExtra(WeatherService.EXTRA_TASK_TIME_MS, taskTime);
+        startService(weatherServiceIntent);
     }
 
-    private void startWeatherService() {
-        Intent intent = new Intent(this, WeatherService.class);
-        startService(intent);
+    private void stopWeatherService() {
+        stopService(weatherServiceIntent);
+    }
+
+    private void handleWeatherResult() {
+        Log.d(LOG, "Weather Service received");
     }
 
     //Data sent from WeatherService
@@ -38,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             if(result==null) {
                 //NULL HANDLER
             }
-            //HANDLE RESULTS
+            handleWeatherResult();
         }
     };
 }
