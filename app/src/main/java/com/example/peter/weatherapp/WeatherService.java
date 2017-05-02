@@ -11,7 +11,8 @@ import android.util.Log;
  */
 
 public class WeatherService extends Service {
-    private static final String LOG = "SERVICE LOG";
+    private static final String LOG = "WeatherService";
+    public static final String EXTRA_TASK_RESULTS = "task_result";
 
     @Override
     public void onCreate() {
