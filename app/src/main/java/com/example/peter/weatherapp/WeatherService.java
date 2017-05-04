@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 /**
@@ -16,6 +17,7 @@ import android.util.Log;
 public class WeatherService extends Service {
     public static final String EXTRA_TASK_RESULTS = "task_result";
     public static final String EXTRA_TASK_TIME_MS = "task_time";
+    public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
     private static final String LOG = "WeatherService";
 
@@ -68,16 +70,17 @@ public class WeatherService extends Service {
                     Thread.sleep(interval);
                     Log.d(LOG, "Task completed");
                 } catch (Exception e) {
-                    //Handle error
+                    e.printStackTrace();
+                    Log.d(LOG, "Failed to start task");
                 }
                 return "STRINGGG!!";
             }
 
 
             @Override
-            protected void onPostExecute(String stringResult) {
-                super.onPostExecute(stringResult);
-                //broadcastTaskResult(stringResult);
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                broadcastResult(result);
 
                 //if Service is still running, keep doing this recursively
                 if(running){
@@ -88,5 +91,20 @@ public class WeatherService extends Service {
 
         task.execute();
 
+    }
+
+    private void broadcastResult(String result){
+        Intent broadcastIntent = new Intent();
+        //broadcastIntent.setAction(BROADCAST_WEATHER_SERVICE_RESULT);
+        broadcastIntent.putExtra(EXTRA_TASK_RESULTS, result);
+        Log.d(LOG, "Broadcasting:" + result);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        running = false;
+        Log.d(LOG,"Background service destroyed");
+        super.onDestroy();
     }
 }
