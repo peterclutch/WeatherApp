@@ -2,6 +2,7 @@ package com.example.peter.weatherapp;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -34,6 +35,8 @@ public class WeatherService extends Service {
             interval = intent.getLongExtra(EXTRA_TASK_TIME_MS, 30000);
             Log.d(LOG, "onStartCommand: Service is running with wait: " + interval + "ms");
 
+            backgroundTask(interval);
+
         } else {
             Log.d(LOG, "onStartCommand: Service is not running");
         }
@@ -46,5 +49,44 @@ public class WeatherService extends Service {
     //this service is not for binding - returns null
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void backgroundTask(final long interval){
+
+
+        AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected String doInBackground(Object[] params) {
+                try {
+                    Log.d(LOG, "Task started");
+                    Thread.sleep(interval);
+                    Log.d(LOG, "Task completed");
+                } catch (Exception e) {
+                    //Handle error
+                }
+                return "STRINGGG!!";
+            }
+
+
+            @Override
+            protected void onPostExecute(String stringResult) {
+                super.onPostExecute(stringResult);
+                //broadcastTaskResult(stringResult);
+
+                //if Service is still running, keep doing this recursively
+                if(running){
+                    backgroundTask(interval);
+                }
+            }
+        };
+
+        task.execute();
+
     }
 }
