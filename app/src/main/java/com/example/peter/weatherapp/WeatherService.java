@@ -13,15 +13,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.peter.weatherapp.model.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
-import android.os.Handler;
 
 /**
  * Created by Peter on 02-May-17.
@@ -35,6 +33,7 @@ public class WeatherService extends Service {
     String weatherURL = "http://api.openweathermap.org/data/2.5/weather?id=2624652&APPID=e69dc40b8fa2ada4db52635eb00bd736";
     RequestQueue requestQueue;
 
+    //Value of recently extracted temperature
     private String description;
     private double temperature;
 
@@ -49,9 +48,6 @@ public class WeatherService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (requestQueue == null){
-            requestQueue = Volley.newRequestQueue(this);
-        }
         Log.d(LOG, "onCreate");
     }
 
@@ -104,20 +100,15 @@ public class WeatherService extends Service {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
 
-                newSendRequest();
-                Log.d(LOG, "temperature: " + temperature);
-                Log.d(LOG, "Description: " + description);
+                openWeatherApiRequest();
                 broadcastResult(result);
-
                 //if Service is still running, keep doing this recursively
                 if(running){
                     backgroundTask(interval);
                 }
             }
         };
-
         task.execute();
-
     }
 
     private void broadcastResult(String result){
@@ -144,20 +135,31 @@ public class WeatherService extends Service {
         return true;
     }
 
-    public void newSendRequest(){
-        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, weatherURL, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
+    public void openWeatherApiRequest(){
+        if (requestQueue == null){
+            requestQueue = Volley.newRequestQueue(this);
+        }
 
+        StringRequest stringRequest = new StringRequest
+                (Request.Method.GET, weatherURL, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
                         try {
-                            JSONArray weatherData = response.getJSONArray("weather");
-                            JSONObject main = response.getJSONObject("main");
-                            JSONObject descriptionJSON = weatherData.getJSONObject(0);
+                            JSONObject weatherData = new JSONObject(response);
+                            JSONObject descriptionJSON = weatherData.getJSONArray("weather").getJSONObject(0);
                             description = descriptionJSON.getString("description");
-                            double temperatureDouble =  main.getDouble("temp");
+                            double temperatureDouble =  weatherData.getJSONObject("main").getDouble("temp");
 
                             temperature = temperatureDouble - 273.15;
+
+                            Log.d(LOG, "temperature: " + temperature);
+                            Log.d(LOG, "Description: " + description);
+
+                            Weather weatherNow = new Weather(temperature, description);
+                            weatherNow.setId(dbHelper.insertRow(weatherNow));
+
+                            Weather weathertest = dbHelper.getWeather(weatherNow.getId());
+                            Log.d(LOG, "temp: " + weathertest.getTemperature() + " desc: " + weathertest.getIcon());
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -167,10 +169,9 @@ public class WeatherService extends Service {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-
+                        Log.d(LOG, "Didn't succeed at string request " + error);
                     }
                 });
-        requestQueue.add(jsObjRequest);
+        requestQueue.add(stringRequest);
     }
 }
