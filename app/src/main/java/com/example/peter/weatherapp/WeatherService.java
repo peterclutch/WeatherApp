@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -115,14 +116,17 @@ public class WeatherService extends Service {
     }
 
     private void broadcastResult(List<Weather> result){
-        Intent broadcastIntent = new Intent();
+        Intent broadcastIntent = new Intent(BROADCAST_WEATHER_SERVICE_RESULT);
         //broadcastIntent.setAction(BROADCAST_WEATHER_SERVICE_RESULT);
         //broadcastIntent.putExtra(EXTRA_TASK_RESULTS, result);
-
-
-
         //broadcastIntent.putParcelableArrayListExtra(EXTRA_TASK_RESULTS, result);
+
+        Bundle b = new Bundle();
+        b.putSerializable("weather_array",(Serializable)result);
+        broadcastIntent.putExtra(EXTRA_TASK_RESULTS, b);
+
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+        Log.d(LOG, "broadcastResult sent");
     }
 
     @Override
@@ -174,6 +178,7 @@ public class WeatherService extends Service {
                             List<Weather> dailyWeather = dbHelper.getDailyWeather();
 
                             //Send to UI
+                            broadcastResult(dailyWeather);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -3,6 +3,8 @@ package com.example.peter.weatherapp;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG = "MainActivity";
+    public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
     private long task_time = 4*1000; //4s
 
@@ -42,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
         weatherServiceIntent = new Intent(this, WeatherService.class);
         startWeatherService(task_time);
 
-        //Runs database and gathers information for UI
-        //initDatabase();
-
         //Creates an adaptor for the ListView to put 24 hour weather updates
         adaptor = new WeatherAdaptor(this, weatherList);
         weatherListView.setAdapter(adaptor);
+
+        //Broadcast Receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(onWeatherServiceResult, new IntentFilter(BROADCAST_WEATHER_SERVICE_RESULT));
     }
 
     private void startWeatherService(long taskTime) {
@@ -68,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG, "Received WeatherService data");
-            String result = intent.getStringExtra(WeatherService.EXTRA_TASK_RESULTS);
+            Bundle result = intent.getBundleExtra(WeatherService.EXTRA_TASK_RESULTS);
+
             if(result==null) {
-                //NULL HANDLER
+                List<Weather> weatherList = (List<Weather>) result.getSerializable("weather_array");
+                Log.d(LOG, weatherList.size() + "");
             }
             handleWeatherResult();
         }
