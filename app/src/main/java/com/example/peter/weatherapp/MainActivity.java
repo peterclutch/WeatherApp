@@ -73,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG, "Received WeatherService data");
             Bundle result = intent.getBundleExtra(WeatherService.EXTRA_TASK_RESULTS);
 
-            if(result==null) {
-                List<Weather> weatherList = (List<Weather>) result.getSerializable("weather_array");
+            if(result!=null) {
+                weatherList = (List<Weather>) result.getSerializable("weather_array");
                 Log.d(LOG, weatherList.size() + "");
+                adaptor = new WeatherAdaptor(context, weatherList);
+                weatherListView.setAdapter(adaptor);
             }
             handleWeatherResult();
         }
