@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private long task_time = 4*1000; //4s
 
     private Intent weatherServiceIntent;
-    private DatabaseHelper dbHelper;
+    //private DatabaseHelper dbHelper;
     private ListView weatherListView;
     private List<Weather> weatherList;
     private WeatherAdaptor adaptor;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         startWeatherService(task_time);
 
         //Runs database and gathers information for UI
-        initDatabase();
+        //initDatabase();
 
         //Creates an adaptor for the ListView to put 24 hour weather updates
         adaptor = new WeatherAdaptor(this, weatherList);
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     //Initializes database
-    private boolean initDatabase() {
+    /*private boolean initDatabase() {
         if (dbHelper == null) {
             Log.d(LOG, "Database initializing");
             dbHelper = new DatabaseHelper(getApplicationContext());
@@ -92,5 +92,5 @@ public class MainActivity extends AppCompatActivity {
         //Log.d(LOG, wehe.size() + "");
 
         return true;
-    }
+    }*/
 }
