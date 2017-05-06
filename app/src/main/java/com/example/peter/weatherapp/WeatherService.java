@@ -3,12 +3,14 @@ package com.example.peter.weatherapp;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.example.peter.weatherapp.model.Weather;
+
+import java.util.List;
 
 /**
  * Created by Peter on 02-May-17.
@@ -18,6 +20,8 @@ public class WeatherService extends Service {
     public static final String EXTRA_TASK_RESULTS = "task_result";
     public static final String EXTRA_TASK_TIME_MS = "task_time";
     public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
+
+    private DatabaseHelper dbHelper;
 
     private static final String LOG = "WeatherService";
 
@@ -37,6 +41,7 @@ public class WeatherService extends Service {
             interval = intent.getLongExtra(EXTRA_TASK_TIME_MS, 30000);
             Log.d(LOG, "onStartCommand: Service is running with wait: " + interval + "ms");
 
+            initDatabase();
             backgroundTask(interval);
 
         } else {
@@ -54,8 +59,6 @@ public class WeatherService extends Service {
     }
 
     private void backgroundTask(final long interval){
-
-
         AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
 
             @Override
@@ -79,6 +82,7 @@ public class WeatherService extends Service {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
+
                 broadcastResult(result);
 
                 //if Service is still running, keep doing this recursively
@@ -96,7 +100,6 @@ public class WeatherService extends Service {
         Intent broadcastIntent = new Intent();
         //broadcastIntent.setAction(BROADCAST_WEATHER_SERVICE_RESULT);
         broadcastIntent.putExtra(EXTRA_TASK_RESULTS, result);
-        Log.d(LOG, "Broadcasting:" + result);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
@@ -105,5 +108,15 @@ public class WeatherService extends Service {
         running = false;
         Log.d(LOG,"Background service destroyed");
         super.onDestroy();
+    }
+
+    private boolean initDatabase() {
+        if (dbHelper == null) {
+            Log.d(LOG, "Database initializing");
+            dbHelper = new DatabaseHelper(getApplicationContext());
+        } else {
+            return false;
+        }
+        return true;
     }
 }
