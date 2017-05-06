@@ -28,7 +28,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Database Version
     private static final int DATABASE_VERSION = 4;
 
-    //TODO: Extract all constants for database schema in a contract class
     //Database Name
     private static final String DATABASE_NAME = "database";
 
@@ -57,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(LOG, "Created DB");
     }
 
+    //When database is changed - Would be ideal to add a way to handle the data and not just drop everything
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         //Drop older table
@@ -110,6 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return weather;
     }
 
+    //Method for getting all the weather data in the database
     public List<Weather> getAllWeather() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Weather> allWeather = new ArrayList<Weather>();
@@ -135,5 +136,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return allWeather;
     }
 
+    //Method for getting weather data from the last 24 hr
+    public List<Weather> getDailyWeather() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Weather> dailyWeather = new ArrayList<Weather>();
+
+        //Create cursor to run query
+        String selectQuery = "SELECT * FROM " + TABLE_WEATHER + " WHERE "
+                + KEY_TIME + " > datetime('now', '-1 days')";
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                //Extract data from cursor
+                Weather weather = new Weather();
+                weather.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
+                weather.setTemperature(c.getInt(c.getColumnIndexOrThrow(KEY_TEMP)));
+                weather.setIcon(c.getString(c.getColumnIndexOrThrow(KEY_ICON)));
+                weather.setTime(c.getString(c.getColumnIndexOrThrow(KEY_TIME)));
+
+                //add to list
+                dailyWeather.add(weather);
+            } while (c.moveToNext());
+        }
+
+        return dailyWeather;
+    }
 
 }

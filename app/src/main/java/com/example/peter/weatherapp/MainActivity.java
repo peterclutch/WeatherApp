@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.example.peter.weatherapp.model.Weather;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG = "MainActivity";
@@ -64,11 +66,13 @@ public class MainActivity extends AppCompatActivity {
             dbHelper = new DatabaseHelper(getApplicationContext());
         } else { return false; }
 
-        Weather w = new Weather(23.0, "HEJ");
+        //Get the weather from last 24 hours
+        List<Weather> weatherList = dbHelper.getDailyWeather();
 
-        w.setId(dbHelper.insertRow(w));
-
-        Log.d(LOG, dbHelper.getAllWeather().toString());
+        //Weather w = new Weather(23.0, "HEJ");
+        //w.setId(dbHelper.insertRow(w));
+        //Weather vever = dbHelper.getWeather(5);
+        //Log.d(LOG, wehe.size() + "");
 
         return true;
     }
