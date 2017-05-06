@@ -73,7 +73,7 @@ public class WeatherService extends Service {
                     e.printStackTrace();
                     Log.d(LOG, "Failed to start task");
                 }
-                return "STRINGGG!!";
+                return "";
             }
 
 

@@ -7,18 +7,24 @@ import java.util.Date;
  */
 
 public class Weather {
-    private int id;
+    private long id;
     private Double temperature;
-    //private String icon;
-    private Date time;
+    private String icon;
+    private String time;
+
+    public Weather() {
+
+    }
 
     public Weather(Double temperature, String icon) {
         this.temperature = temperature;
-        //this.icon = icon;
-        time = new Date();
+        this.icon = icon;
+        this.time = "";
     }
 
-    public int getid() {
+    public void setId(long id) { this.id = id; }
+
+    public long getId() {
         return id;
     }
 
@@ -30,11 +36,15 @@ public class Weather {
         return temperature;
     }
 
-    public void setTime(Date time) {
+    public void setIcon(String icon) { this.icon = icon; }
+
+    public String getIcon() { return icon; }
+
+    public void setTime(String time) {
         this.time = time;
     }
 
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 }
