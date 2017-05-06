@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.peter.weatherapp.adaptors.WeatherAdaptor;
 import com.example.peter.weatherapp.model.Weather;
 
 import java.util.List;
@@ -19,18 +22,32 @@ public class MainActivity extends AppCompatActivity {
 
     private Intent weatherServiceIntent;
     private DatabaseHelper dbHelper;
+    private ListView weatherListView;
+    private List<Weather> weatherList;
+    private WeatherAdaptor adaptor;
+    private TextView temp, desc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(LOG, "OnCreate");
+        Log.d(LOG, "OnCreate started");
 
-        initDatabase();
+        //Define views from layout
+        weatherListView = (ListView) findViewById(R.id.listView);
+        temp = (TextView) findViewById(R.id.temp);
+        desc = (TextView) findViewById(R.id.desc);
 
-        //Creates weatherService and starts it
+        //Creates weatherService and starts it - For requesting current weather and storing to DB
         weatherServiceIntent = new Intent(this, WeatherService.class);
         startWeatherService(task_time);
+
+        //Runs database and gathers information for UI
+        initDatabase();
+
+        //Creates an adaptor for the ListView to put 24 hour weather updates
+        adaptor = new WeatherAdaptor(this, weatherList);
+        weatherListView.setAdapter(adaptor);
     }
 
     private void startWeatherService(long taskTime) {
@@ -67,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         } else { return false; }
 
         //Get the weather from last 24 hours
-        List<Weather> weatherList = dbHelper.getDailyWeather();
+        weatherList = dbHelper.getDailyWeather();
 
         //Weather w = new Weather(23.0, "HEJ");
         //w.setId(dbHelper.insertRow(w));

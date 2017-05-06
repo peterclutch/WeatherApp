@@ -17,11 +17,10 @@ import java.util.Locale;
 
 /**
  * Created by Peter on 06-May-17.
+ * This class is inspired by Kasper's DataStorageDemo databaseHelper.java file
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
-    /* This class is inspired by Kaspers DataStorageDemo databaseHelper.java file */
 
     private static final String LOG = "DatabaseHelper";
 
