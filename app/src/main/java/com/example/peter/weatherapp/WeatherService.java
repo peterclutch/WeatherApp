@@ -68,7 +68,6 @@ public class WeatherService extends Service {
                 try {
                     Log.d(LOG, "Task started");
                     Thread.sleep(interval);
-                    Log.d(LOG, "Task completed");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d(LOG, "Failed to start task");
