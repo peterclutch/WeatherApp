@@ -1,12 +1,13 @@
 package com.example.peter.weatherapp.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Peter on 04-May-17.
  */
 
-public class Weather {
+public class Weather implements Serializable {
     private long id;
     private Double temperature;
     private String icon;

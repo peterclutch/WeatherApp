@@ -3,7 +3,9 @@ package com.example.peter.weatherapp;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -20,6 +22,8 @@ import com.example.peter.weatherapp.model.Weather;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by Peter on 02-May-17.
@@ -101,7 +105,6 @@ public class WeatherService extends Service {
                 super.onPostExecute(result);
 
                 openWeatherApiRequest();
-                broadcastResult(result);
                 //if Service is still running, keep doing this recursively
                 if(running){
                     backgroundTask(interval);
@@ -111,10 +114,14 @@ public class WeatherService extends Service {
         task.execute();
     }
 
-    private void broadcastResult(String result){
+    private void broadcastResult(List<Weather> result){
         Intent broadcastIntent = new Intent();
         //broadcastIntent.setAction(BROADCAST_WEATHER_SERVICE_RESULT);
-        broadcastIntent.putExtra(EXTRA_TASK_RESULTS, result);
+        //broadcastIntent.putExtra(EXTRA_TASK_RESULTS, result);
+
+
+
+        //broadcastIntent.putParcelableArrayListExtra(EXTRA_TASK_RESULTS, result);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
@@ -155,11 +162,18 @@ public class WeatherService extends Service {
                             Log.d(LOG, "temperature: " + temperature);
                             Log.d(LOG, "Description: " + description);
 
+                            //Add API data to weather class
                             Weather weatherNow = new Weather(temperature, description);
+
+                            //Add weather to database
                             weatherNow.setId(dbHelper.insertRow(weatherNow));
 
-                            Weather weathertest = dbHelper.getWeather(weatherNow.getId());
-                            Log.d(LOG, "temp: " + weathertest.getTemperature() + " desc: " + weathertest.getIcon());
+                            Log.d(LOG, "temp: " + dbHelper.getWeather(weatherNow.getId()).getTemperature());
+
+                            //Get all database weather from last 24 hours
+                            List<Weather> dailyWeather = dbHelper.getDailyWeather();
+
+                            //Send to UI
 
                         } catch (JSONException e) {
                             e.printStackTrace();
