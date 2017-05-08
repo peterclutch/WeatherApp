@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.peter.weatherapp.adaptors.WeatherAdaptor;
 import com.example.peter.weatherapp.model.Weather;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG = "MainActivity";
     public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
-    private long task_time = 4*1000; //4s
+    private long task_time = 400*1000; //4s
 
     private Intent weatherServiceIntent;
     //private DatabaseHelper dbHelper;
@@ -76,28 +77,22 @@ public class MainActivity extends AppCompatActivity {
             if(result!=null) {
                 weatherList = (List<Weather>) result.getSerializable("weather_array");
                 Log.d(LOG, weatherList.size() + "");
+
+                Collections.reverse(weatherList);
+
                 adaptor = new WeatherAdaptor(context, weatherList);
                 weatherListView.setAdapter(adaptor);
+                setCurrentWeather();
             }
             handleWeatherResult();
         }
     };
 
-    //Initializes database
-    /*private boolean initDatabase() {
-        if (dbHelper == null) {
-            Log.d(LOG, "Database initializing");
-            dbHelper = new DatabaseHelper(getApplicationContext());
-        } else { return false; }
+    //Sets the text fields of the current weather
+    private void setCurrentWeather() {
+        Weather current = weatherList.get(0);
 
-        //Get the weather from last 24 hours
-        weatherList = dbHelper.getDailyWeather();
-
-        //Weather w = new Weather(23.0, "HEJ");
-        //w.setId(dbHelper.insertRow(w));
-        //Weather vever = dbHelper.getWeather(5);
-        //Log.d(LOG, wehe.size() + "");
-
-        return true;
-    }*/
+        temp.setText(current.getTemperature() + "°C");
+        desc.setText(current.getTime());
+    }
 }
