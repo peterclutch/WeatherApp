@@ -25,16 +25,22 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG = "MainActivity";
     public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
-    private long task_time = 10*60*1000; //10 minutes
+    //Weather update time
+    private long task_time = 10*60*1000; //10 minutes - We have chosen to do 10 minutes instead of 30 for ease of testing
 
+    //Background service
     private Intent weatherServiceIntent;
-    private ListView weatherListView;
+
+    //List of 24hr weather sent from service
     private List<Weather> weatherList;
-    private WeatherAdaptor adaptor;
+
+    //Layout variables
     private TextView temp, desc;
     private String temperature = "";
     private String description = "";
     private Button refresh;
+    private ListView weatherListView;
+    private WeatherAdaptor adaptor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +77,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Method that starts background intent
     private void startWeatherService(long taskTime) {
         weatherServiceIntent.putExtra(WeatherService.EXTRA_TASK_TIME_MS, taskTime);
         startService(weatherServiceIntent);
     }
 
+    //Method that stops background intent
     private void stopWeatherService() {
         stopService(weatherServiceIntent);
     }

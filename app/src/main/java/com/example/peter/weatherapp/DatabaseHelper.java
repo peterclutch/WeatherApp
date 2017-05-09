@@ -67,6 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(LOG, "Upgraded DB");
     }
 
+    //Inserts a weather into the database
     public long insertRow(Weather weather) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -135,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return allWeather;
     }
 
-    //Method for getting weather data from the last 24 hr
+    //Method for getting weather data from the last 24hrs
     public List<Weather> getDailyWeather() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Weather> dailyWeather = new ArrayList<Weather>();
