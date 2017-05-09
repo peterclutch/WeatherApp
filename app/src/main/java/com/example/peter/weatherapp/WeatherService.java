@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Created by Peter on 02-May-17.
+ * * Parts of the implementation is inspired by Kasper's servicedemo
  */
 
 public class WeatherService extends Service {
@@ -42,7 +43,7 @@ public class WeatherService extends Service {
     private String description;
     private double temperature;
 
-
+    //database helper
     private DatabaseHelper dbHelper;
 
     private static final String LOG = "WeatherService";
@@ -56,6 +57,7 @@ public class WeatherService extends Service {
         Log.d(LOG, "onCreate");
     }
 
+    //Initialises db and calls background task
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(!running && intent != null) {
@@ -80,6 +82,7 @@ public class WeatherService extends Service {
         return null;
     }
 
+    //Calls openWeatherApiRequest to retrieve data, and it also calls backgroundTask
     private void backgroundTask(final long interval){
         AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
 
@@ -114,7 +117,7 @@ public class WeatherService extends Service {
         };
         task.execute();
     }
-
+    //creates a broadcast intent and pushes a weather array with the intent
     private void broadcastResult(List<Weather> result){
         Intent broadcastIntent = new Intent(BROADCAST_WEATHER_SERVICE_RESULT);
         //broadcastIntent.setAction(BROADCAST_WEATHER_SERVICE_RESULT);
@@ -135,7 +138,7 @@ public class WeatherService extends Service {
         Log.d(LOG,"Background service destroyed");
         super.onDestroy();
     }
-
+    //Initialising db
     private boolean initDatabase() {
         if (dbHelper == null) {
             Log.d(LOG, "Database initializing");
@@ -146,6 +149,7 @@ public class WeatherService extends Service {
         return true;
     }
 
+    //Retrieve data from openWeatherApi
     public void openWeatherApiRequest(){
         if (requestQueue == null){
             requestQueue = Volley.newRequestQueue(this);
@@ -160,7 +164,7 @@ public class WeatherService extends Service {
                             JSONObject descriptionJSON = weatherData.getJSONArray("weather").getJSONObject(0);
                             description = descriptionJSON.getString("description");
                             double temperatureDouble =  weatherData.getJSONObject("main").getDouble("temp");
-
+                            //Convert to celsius
                             temperature = temperatureDouble - 273.15;
 
                             Log.d(LOG, "temperature: " + temperature);
