@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
     //Weather update time
-    private long task_time = 10*60*1000; //10 minutes - We have chosen to do 10 minutes instead of 30 for ease of testing
+    private long task_time = 20000; //10 minutes - We have chosen to do 10 minutes instead of 30 for ease of testing
 
     //Background service
     private Intent weatherServiceIntent;
