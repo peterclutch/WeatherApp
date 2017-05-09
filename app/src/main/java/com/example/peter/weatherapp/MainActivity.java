@@ -8,6 +8,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,16 +25,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG = "MainActivity";
     public static final String BROADCAST_WEATHER_SERVICE_RESULT = "service_result";
 
-    private long task_time = 400*1000; //4s
+    private long task_time = 10*60*1000; //10 minutes
 
     private Intent weatherServiceIntent;
-    //private DatabaseHelper dbHelper;
     private ListView weatherListView;
     private List<Weather> weatherList;
     private WeatherAdaptor adaptor;
     private TextView temp, desc;
     private String temperature = "";
     private String description = "";
+    private Button refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         weatherListView = (ListView) findViewById(R.id.listView);
         temp = (TextView) findViewById(R.id.temp);
         desc = (TextView) findViewById(R.id.desc);
+        refresh = (Button) findViewById(R.id.refresh);
 
         //Creates weatherService and starts it - For requesting current weather and storing to DB
         weatherServiceIntent = new Intent(this, WeatherService.class);
@@ -55,6 +58,17 @@ public class MainActivity extends AppCompatActivity {
 
         //Broadcast Receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(onWeatherServiceResult, new IntentFilter(BROADCAST_WEATHER_SERVICE_RESULT));
+
+        //On click listener for refresh button
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopWeatherService();
+                weatherServiceIntent = new Intent(MainActivity.this, WeatherService.class);
+                startWeatherService(task_time);
+                Log.d(LOG, "Refresh pressed");
+            }
+        });
     }
 
     private void startWeatherService(long taskTime) {
@@ -91,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         Weather current = weatherList.get(0);
 
         temperature = current.getTemperature() + "°C";
-        description = current.getTime();
+        description = current.getIcon();
 
         temp.setText(temperature);
         desc.setText(description);

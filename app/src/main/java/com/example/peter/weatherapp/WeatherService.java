@@ -85,6 +85,7 @@ public class WeatherService extends Service {
 
             @Override
             protected void onPreExecute() {
+                openWeatherApiRequest();
                 super.onPreExecute();
             }
 
@@ -92,7 +93,6 @@ public class WeatherService extends Service {
             protected String doInBackground(Object[] params) {
                 try {
                     Log.d(LOG, "Task started");
-                    openWeatherApiRequest();
                     Thread.sleep(interval);
                 } catch (Exception e) {
                     e.printStackTrace();
