@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.peter.weatherapp.adaptors.WeatherAdaptor;
 import com.example.peter.weatherapp.model.Weather;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Weather> weatherList;
     private WeatherAdaptor adaptor;
     private TextView temp, desc;
+    private String temperature = "";
+    private String description = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +66,6 @@ public class MainActivity extends AppCompatActivity {
         stopService(weatherServiceIntent);
     }
 
-    private void handleWeatherResult() {
-        Log.d(LOG, "Weather Service received");
-    }
-
     //Data sent from WeatherService
     private BroadcastReceiver onWeatherServiceResult = new BroadcastReceiver() {
         @Override
@@ -84,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 weatherListView.setAdapter(adaptor);
                 setCurrentWeather();
             }
-            handleWeatherResult();
         }
     };
 
@@ -92,7 +90,35 @@ public class MainActivity extends AppCompatActivity {
     private void setCurrentWeather() {
         Weather current = weatherList.get(0);
 
-        temp.setText(current.getTemperature() + "°C");
-        desc.setText(current.getTime());
+        temperature = current.getTemperature() + "°C";
+        description = current.getTime();
+
+        temp.setText(temperature);
+        desc.setText(description);
+    }
+
+    //Saves data to onCreate if the process is killed and restarted.
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (weatherList != null) {
+            savedInstanceState.putSerializable("weather_array", (Serializable) weatherList);
+        }
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    //Restores data from savedInstanceState
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        //Set data
+        weatherList = (List<Weather>) savedInstanceState.getSerializable("weather_array");
+
+        //Put data into text fields
+        adaptor = new WeatherAdaptor(this, weatherList);
+        weatherListView.setAdapter(adaptor);
+        setCurrentWeather();
+
+
     }
 }

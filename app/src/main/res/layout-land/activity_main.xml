@@ -10,8 +10,8 @@
         android:id="@+id/temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="-3dp"
-        android:layout_marginTop="-12dp"
+        android:layout_marginLeft="-1dp"
+        android:layout_marginTop="-1dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         app:layout_constraintLeft_toLeftOf="@+id/desc"
         app:layout_constraintTop_toBottomOf="@+id/desc" />
@@ -20,24 +20,24 @@
         android:id="@+id/desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="-10dp"
-        android:layout_marginTop="-1dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="-2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         app:layout_constraintLeft_toLeftOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="170dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="176dp"
+        android:layout_width="103dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="247dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/current"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.094"
+        app:layout_constraintHorizontal_bias="0.152"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -69,7 +69,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.967"
+        app:layout_constraintHorizontal_bias="0.147" />
 
     <ListView
         android:id="@+id/listView"
